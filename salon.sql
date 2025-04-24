@@ -193,7 +193,7 @@ SELECT pg_catalog.setval('public.customers_customer_id_seq', 1, true);
 -- Name: services_service_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.services_service_id_seq', 6, true);
+SELECT pg_catalog.setval('public.services_service_id_seq', 3, true);
 
 
 --
