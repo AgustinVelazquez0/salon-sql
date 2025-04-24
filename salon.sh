@@ -13,6 +13,7 @@ MAIN_MENU() {
   echo -e "\nPor favor, elija el ID del servicio:"
   read SERVICE_ID_SELECTED
   SERVICE_NAME=$($PSQL "SELECT name FROM services WHERE service_id = $SERVICE_ID_SELECTED")
+  SERVICE_NAME=$(echo $SERVICE_NAME | xargs)  # <-- trim espacios
 
   if [[ -z $SERVICE_NAME ]]
   then
@@ -28,6 +29,7 @@ PEDIR_DATOS_CLIENTE() {
   read CUSTOMER_PHONE
 
   CUSTOMER_NAME=$($PSQL "SELECT name FROM customers WHERE phone = '$CUSTOMER_PHONE'")
+  CUSTOMER_NAME=$(echo $CUSTOMER_NAME | xargs)  # <-- trim espacios
 
   if [[ -z $CUSTOMER_NAME ]]
   then
@@ -42,7 +44,7 @@ PEDIR_DATOS_CLIENTE() {
   CUSTOMER_ID=$($PSQL "SELECT customer_id FROM customers WHERE phone = '$CUSTOMER_PHONE'")
   INSERT_APPOINTMENT=$($PSQL "INSERT INTO appointments(customer_id, service_id, time) VALUES($CUSTOMER_ID, $SERVICE_ID_SELECTED, '$SERVICE_TIME')")
 
-  echo -e "\nTe he agendado para un/a $SERVICE_NAME a las $SERVICE_TIME, $CUSTOMER_NAME."
+  echo -e "\nI have put you down for a $SERVICE_NAME at $SERVICE_TIME, $CUSTOMER_NAME."
 }
 
 MAIN_MENU
