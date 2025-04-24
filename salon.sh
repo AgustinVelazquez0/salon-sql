@@ -1,51 +1,48 @@
-# Mostrar los servicios disponibles
-echo -e "\nEstas son los servicios disponibles:"
+#!/bin/bash
+
 PSQL="psql --username=postgres --dbname=salon -t -c"
 
-# Mostrar lista de servicios
-$PSQL "SELECT service_id, name FROM services" | while read SERVICE_ID SERVICE_NAME
-do
-  echo "$SERVICE_ID) $SERVICE_NAME"
-done
+MAIN_MENU() {
+  echo -e "\nEstas son los servicios disponibles:"
+  SERVICES=$($PSQL "SELECT service_id, name FROM services ORDER BY service_id")
+  echo "$SERVICES" | while read SERVICE_ID BAR SERVICE_NAME
+  do
+    echo "$SERVICE_ID) $SERVICE_NAME"
+  done
 
-# Solicitar que el usuario elija un servicio
-echo -e "\nPor favor, elija el ID del servicio:"
-read SERVICE_ID_SELECTED
+  echo -e "\nPor favor, elija el ID del servicio:"
+  read SERVICE_ID_SELECTED
+  SERVICE_NAME=$($PSQL "SELECT name FROM services WHERE service_id = $SERVICE_ID_SELECTED")
 
-# Verificar si el servicio existe
-SERVICE_NAME=$($PSQL "SELECT name FROM services WHERE service_id = $SERVICE_ID_SELECTED")
+  if [[ -z $SERVICE_NAME ]]
+  then
+    echo -e "\nServicio no válido. Intente de nuevo."
+    MAIN_MENU
+  else
+    PEDIR_DATOS_CLIENTE
+  fi
+}
 
-if [[ -z $SERVICE_NAME ]]
-then
-  echo "El servicio no existe."
-  exit
-fi
+PEDIR_DATOS_CLIENTE() {
+  echo -e "\nPor favor, ingrese su número de teléfono:"
+  read CUSTOMER_PHONE
 
-# Solicitar el número de teléfono del cliente
-echo -e "\nPor favor, ingrese su número de teléfono:"
-read CUSTOMER_PHONE
+  CUSTOMER_NAME=$($PSQL "SELECT name FROM customers WHERE phone = '$CUSTOMER_PHONE'")
 
-# Verificar si el cliente ya está en la base de datos
-CUSTOMER_NAME=$($PSQL "SELECT name FROM customers WHERE phone = '$CUSTOMER_PHONE'")
+  if [[ -z $CUSTOMER_NAME ]]
+  then
+    echo -e "\nEste teléfono no está registrado. ¿Cómo te llamás?"
+    read CUSTOMER_NAME
+    INSERT_CUSTOMER=$($PSQL "INSERT INTO customers(name, phone) VALUES('$CUSTOMER_NAME', '$CUSTOMER_PHONE')")
+  fi
 
-if [[ -z $CUSTOMER_NAME ]]
-then
-  # Si no existe, pedir nombre e insertarlo
-  echo -e "\nEste teléfono no está registrado. ¿Cómo te llamas?"
-  read CUSTOMER_NAME
-  INSERT_CUSTOMER=$($PSQL "INSERT INTO customers (name, phone) VALUES ('$CUSTOMER_NAME', '$CUSTOMER_PHONE')")
-  echo "Cliente registrado con éxito."
-fi
+  echo -e "\n¿A qué hora querés la cita?"
+  read SERVICE_TIME
 
-# Pedir la hora para la cita
-echo -e "\n¿A qué hora le gustaría agendar su cita?"
-read SERVICE_TIME
+  CUSTOMER_ID=$($PSQL "SELECT customer_id FROM customers WHERE phone = '$CUSTOMER_PHONE'")
+  INSERT_APPOINTMENT=$($PSQL "INSERT INTO appointments(customer_id, service_id, time) VALUES($CUSTOMER_ID, $SERVICE_ID_SELECTED, '$SERVICE_TIME')")
 
-# Obtener el customer_id
-CUSTOMER_ID=$($PSQL "SELECT customer_id FROM customers WHERE phone = '$CUSTOMER_PHONE'")
+  echo -e "\nTe he agendado para un/a $SERVICE_NAME a las $SERVICE_TIME, $CUSTOMER_NAME."
+}
 
-# Insertar la cita en la tabla appointments
-INSERT_APPOINTMENT=$($PSQL "INSERT INTO appointments (customer_id, service_id, time) VALUES ($CUSTOMER_ID, $SERVICE_ID_SELECTED, '$SERVICE_TIME')")
-
-# Confirmación de la cita
-echo -e "\nTe he agendado para un/a $SERVICE_NAME a las $SERVICE_TIME, $CUSTOMER_NAME."
+MAIN_MENU
