@@ -2,13 +2,12 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 17.2 (Ubuntu 17.2-1.pgdg22.04+1)
--- Dumped by pg_dump version 17.2 (Ubuntu 17.2-1.pgdg22.04+1)
+-- Dumped from database version 12.17 (Ubuntu 12.17-1.pgdg22.04+1)
+-- Dumped by pg_dump version 12.17 (Ubuntu 12.17-1.pgdg22.04+1)
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
 SET idle_in_transaction_session_timeout = 0;
-SET transaction_timeout = 0;
 SET client_encoding = 'UTF8';
 SET standard_conforming_strings = on;
 SELECT pg_catalog.set_config('search_path', '', false);
@@ -48,7 +47,7 @@ CREATE SEQUENCE public.appointments_appointment_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.appointments_appointment_id_seq OWNER TO postgres;
+ALTER TABLE public.appointments_appointment_id_seq OWNER TO postgres;
 
 --
 -- Name: appointments_appointment_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
@@ -83,7 +82,7 @@ CREATE SEQUENCE public.customers_customer_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.customers_customer_id_seq OWNER TO postgres;
+ALTER TABLE public.customers_customer_id_seq OWNER TO postgres;
 
 --
 -- Name: customers_customer_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
@@ -117,7 +116,7 @@ CREATE SEQUENCE public.services_service_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.services_service_id_seq OWNER TO postgres;
+ALTER TABLE public.services_service_id_seq OWNER TO postgres;
 
 --
 -- Name: services_service_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
